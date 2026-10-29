@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Mail, MapPin, Github, Linkedin, ExternalLink, GitBranch, ChevronRight, ChevronLeft, Cpu, Code2, Briefcase, X } from "lucide-react";
-import { SKILLS, EXPERIENCE, PROJECTS } from "@/data/portfolio";
+import { SKILLS, EXPERIENCE, PROJECTS, PROJECT_CATEGORIES, FEATURED_SKILLS, SKILL_USAGE } from "@/data/portfolio";
 import img from "../assets/yo.png";
 
 const _projImages = import.meta.glob(
@@ -39,7 +39,10 @@ function ProjectDetailPane({ project }: { project: typeof PROJECTS[0] }) {
           {/* Header */}
           <div className="shrink-0">
             <h2 className="text-3xl text-white font-semibold tracking-tight truncate">{project.name}</h2>
-            <div className="text-blue-500 text-[10px] font-mono uppercase tracking-widest mb-3 mt-1 pb-3 border-b border-[#111]">{project.type}</div>
+            <div className="text-blue-500 text-[10px] font-mono uppercase tracking-widest mb-3 mt-1 pb-3 border-b border-[#111]">
+              {project.type}
+              {project.company && <span className="text-zinc-500"> // {project.company}</span>}
+            </div>
           </div>
           
           {/* Image Viewer (Center, Flexible) */}
@@ -173,6 +176,13 @@ function ProjectDetailPane({ project }: { project: typeof PROJECTS[0] }) {
   );
 }
 
+/** Agrupa proyectos por empresa conservando el orden en que aparecen. */
+function groupByCompany(projects: typeof PROJECTS): [string | undefined, typeof PROJECTS][] {
+  const groups = new Map<string | undefined, typeof PROJECTS>();
+  for (const p of projects) groups.set(p.company, [...(groups.get(p.company) ?? []), p]);
+  return [...groups.entries()];
+}
+
 export default function Home() {
   const [activeTab, setActiveTab] = useState("experience");
   const [activeProject, setActiveProject] = useState(PROJECTS[0]);
@@ -235,7 +245,7 @@ export default function Home() {
                 <div className="text-[8px] text-zinc-600 uppercase tracking-widest mt-1">Años Exp.</div>
               </div>
               <div>
-                <div className="text-white font-mono text-lg">8+</div>
+                <div className="text-white font-mono text-lg">{new Set(EXPERIENCE.map(e => e.company)).size}</div>
                 <div className="text-[8px] text-zinc-600 uppercase tracking-widest mt-1">Empresas</div>
               </div>
               <div>
@@ -275,8 +285,8 @@ export default function Home() {
 
           {/* EXPERIENCE */}
           {activeTab === "experience" && (
-            <div className="h-full flex flex-col justify-start pt-12 md:pt-16 px-12 md:px-16 overflow-hidden">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-10 gap-y-8 w-full max-w-6xl">
+            <div className="h-full py-3 2xl:py-5 px-8 lg:px-10 overflow-y-auto no-scrollbar">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-8 w-full">
                 {EXPERIENCE.map((e, index) => (
                   <div key={e.id} className="relative flex flex-col border-l border-[#222] pl-5">
                     {/* Tiny active marker for most recent */}
@@ -315,23 +325,57 @@ export default function Home() {
             <div className="flex h-full w-full overflow-hidden">
               {/* Project List */}
               <div className="w-1/3 border-r border-[#1c1c1c] bg-[#050505] flex flex-col shrink-0 overflow-y-auto no-scrollbar">
-                {PROJECTS.map(p => (
-                  <button 
-                    key={p.id} 
-                    onClick={() => setActiveProject(p)}
-                    className={`w-full text-left px-6 py-5 shrink-0 flex flex-col justify-center relative group border-b border-[#111] last:border-b-0 ${
-                      activeProject.id === p.id 
-                        ? 'bg-[#0f0f0f]' 
-                        : 'hover:bg-[#0a0a0a]'
-                    }`}
-                  >
-                    {activeProject.id === p.id && (
-                      <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
-                    )}
-                    <span className={`text-sm font-semibold truncate w-full ${activeProject.id === p.id ? 'text-white' : 'text-zinc-400 group-hover:text-white'}`}>{p.name}</span>
-                    <span className="text-zinc-600 font-mono text-[9px] uppercase tracking-widest truncate w-full mt-0.5">{p.type}</span>
-                  </button>
-                ))}
+                {/* Category selector */}
+                <div className="sticky top-0 z-20 grid grid-cols-3 shrink-0 bg-[#080808] border-b border-[#1c1c1c]">
+                  {PROJECT_CATEGORIES.map(cat => {
+                    const isActive = activeProject.category === cat.id;
+                    return (
+                      <button
+                        key={cat.id}
+                        onClick={() => setActiveProject(PROJECTS.find(p => p.category === cat.id) ?? activeProject)}
+                        className={`relative py-3.5 text-[11px] 2xl:text-[13px] font-mono uppercase tracking-widest transition-colors ${
+                          isActive ? 'text-white' : 'text-zinc-600 hover:text-zinc-300'
+                        }`}
+                      >
+                        {cat.label}
+                        <span className={`ml-1.5 ${isActive ? 'text-blue-500' : 'text-zinc-700'}`}>
+                          {PROJECTS.filter(p => p.category === cat.id).length}
+                        </span>
+                        {isActive && <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-blue-500"></div>}
+                      </button>
+                    );
+                  })}
+                </div>
+                {/* Projects of the active category, grouped by company */}
+                {groupByCompany(PROJECTS.filter(p => p.category === activeProject.category)).map(([company, items]) => {
+                  return (
+                    <div key={company ?? "none"} className="shrink-0">
+                      {company && (
+                        <div className="flex items-center justify-between px-6 py-2.5 bg-[#060606] border-b border-[#1c1c1c] text-[9px] font-mono uppercase tracking-widest text-blue-500">
+                          <span className="truncate">{company}</span>
+                          <span className="text-zinc-600">{items.length}</span>
+                        </div>
+                      )}
+                      {items.map(p => (
+                        <button
+                          key={p.id}
+                          onClick={() => setActiveProject(p)}
+                          className={`w-full text-left px-6 py-5 shrink-0 flex flex-col justify-center relative group border-b border-[#111] ${
+                            activeProject.id === p.id
+                              ? 'bg-[#0f0f0f]'
+                              : 'hover:bg-[#0a0a0a]'
+                          }`}
+                        >
+                          {activeProject.id === p.id && (
+                            <div className="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
+                          )}
+                          <span className={`text-sm font-semibold truncate w-full ${activeProject.id === p.id ? 'text-white' : 'text-zinc-400 group-hover:text-white'}`}>{p.name}</span>
+                          <span className="text-zinc-600 font-mono text-[9px] uppercase tracking-widest truncate w-full mt-0.5">{p.type}</span>
+                        </button>
+                      ))}
+                    </div>
+                  );
+                })}
               </div>
               {/* Project Detail */}
               <ProjectDetailPane key={activeProject.id} project={activeProject} />
@@ -340,15 +384,39 @@ export default function Home() {
 
           {/* STACK / SKILLS */}
           {activeTab === "skills" && (
-            <div className="h-full flex flex-col justify-start pt-12 md:pt-16 px-12 lg:px-20 overflow-hidden bg-[#030303]">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-x-8 gap-y-10 max-w-7xl w-full">
+            <div className="h-full py-3 2xl:py-4 px-8 lg:px-10 overflow-y-auto no-scrollbar bg-[#030303]">
+              {/* Destacados */}
+              <div className="mb-4 2xl:mb-6">
+                <div className="flex items-baseline justify-between mb-2 pb-1.5 border-b border-[#111]">
+                  <h3 className="text-blue-500 text-[10px] 2xl:text-xs font-mono uppercase tracking-[0.2em]">Principales</h3>
+                  <span className="text-zinc-600 text-[10px] 2xl:text-xs font-mono uppercase tracking-widest">Proyectos donde se usa</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5">
+                  {FEATURED_SKILLS.map(name => (
+                    <div key={name} className="flex-1 flex items-baseline justify-between gap-2 2xl:gap-3 bg-[#080808] border border-[#1f2937] px-2 py-1.5 2xl:px-3 2xl:py-2 hover:border-blue-500 transition-colors cursor-default">
+                      <span className="text-white text-[13px] 2xl:text-base font-semibold whitespace-nowrap">{name}</span>
+                      {/* Sin conteo: tecnología de empleos anteriores cuyo código no está en el equipo */}
+                      <span className="text-blue-500 font-mono text-[11px] 2xl:text-sm shrink-0">{SKILL_USAGE[name] ?? "Laboral"}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Resto por categoría, ordenado por uso. Columnas tipo mosaico: cada categoría ocupa solo su alto */}
+              <div className="columns-2 lg:columns-3 xl:columns-4 2xl:columns-5 gap-x-6 w-full">
                 {SKILLS.map(s => (
-                  <div key={s.label} className="flex flex-col overflow-hidden">
-                    <h3 className="text-blue-500 text-[10px] font-mono uppercase tracking-[0.2em] mb-4 pb-2 border-b border-[#111]">{s.label}</h3>
-                    <div className="flex flex-wrap gap-1.5">
-                      {s.items.map(i => (
-                        <div key={i} className="text-zinc-400 text-xs bg-[#080808] border border-[#1a1a1a] px-2.5 py-1 hover:text-white hover:border-[#333] transition-colors cursor-default">
+                  <div key={s.label} className="break-inside-avoid mb-2 2xl:mb-3 flex flex-col overflow-hidden">
+                    <h3 className="text-blue-500 text-[10px] 2xl:text-xs font-mono uppercase tracking-[0.2em] mb-1.5 pb-1 2xl:mb-2 2xl:pb-1.5 border-b border-[#111]">{s.label}</h3>
+                    <div className="flex flex-wrap gap-1">
+                      {s.items
+                        .filter(i => !FEATURED_SKILLS.includes(i))
+                        .sort((a, b) => (SKILL_USAGE[b] ?? 0) - (SKILL_USAGE[a] ?? 0))
+                        .map(i => (
+                        <div key={i} className="flex items-baseline gap-1.5 text-zinc-400 text-xs 2xl:text-[15px] leading-tight bg-[#080808] border border-[#1a1a1a] px-1.5 py-0.5 2xl:px-2 2xl:py-[3px] hover:text-white hover:border-[#333] transition-colors cursor-default">
                           {i}
+                          {SKILL_USAGE[i] !== undefined && (
+                            <span className="text-zinc-600 font-mono text-[10px] 2xl:text-xs">{SKILL_USAGE[i]}</span>
+                          )}
                         </div>
                       ))}
                     </div>

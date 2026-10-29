@@ -412,4 +412,45 @@ export const PROJECTS: ProjectItem[] = [
       }
     ],
   },
+  {
+    id: 11,
+    name: "Event Assist",
+    folder: "event-assist",
+    type: "SaaS / Eventos",
+    description:
+      "Plataforma para crear y gestionar eventos sociales (bodas, XV años, cumpleaños, galas): invitaciones digitales con cuenta regresiva, mapa, itinerario y confirmación de asistencia (RSVP), envío masivo y personalizado por WhatsApp, y tarjetas imprimibles con código QR en distintos tamaños de imprenta. Incluye editor de diseño con vista previa en vivo, constructor libre por bloques y control de invitados, pases y mesas.",
+    tech: ["React", "TypeScript", "Node.js", "MariaDB", "Express", "Tailwind CSS", "Sequelize"],
+    url: "https://event-os.arcandevs.com/login",
+    repos: [
+      {
+        label: "eventassist-frontend",
+        url: "https://github.com/asanchezx96/eventassist-frontend",
+      },
+      {
+        label: "eventassist.backend",
+        url: "https://github.com/asanchezx96/eventassist.backend",
+      },
+    ],
+  },
+  {
+    id: 12,
+    name: "MOVA Energía",
+    folder: "mova",
+    type: "Sitio Web Corporativo",
+    description:
+      "Sitio corporativo para MOVA Oil & Gas Services, integrador técnico del sector energético e industrial. Presenta sus líneas de servicio (consultoría y dirección de proyectos, diseño y fabricación), modelo de trabajo y contacto, con diseño industrial, modo claro/oscuro, versión bilingüe (ES / EN) y carga de páginas bajo demanda.",
+    tech: ["React", "TypeScript", "Tailwind CSS", "Vite", "React Router", "i18next"],
+    url: "https://movaenergia.com/",
+    repos: [],
+  },
+  {
+    id: 13,
+    name: "HCO Suite",
+    folder: "hco-suite",
+    type: "Identidad / SSO",
+    description:
+      "Punto de entrada único para los sistemas de HCO: inicio de sesión centralizado (SSO) con tokens JWT RS256, sesión global con cierre en cascada, roles por sistema y matriz de permisos por módulo y acción. Administra usuarios, su alcance por empresa, contrato y proyecto, y el registro de las aplicaciones satélite (Databoard, GRISK), que validan el acceso con un paquete cliente propio. En desarrollo, aún no está en producción.",
+    tech: ["Angular", "TypeScript", "Node.js", "MySQL", "Express", "Bootstrap", "Sequelize", "JWT"],
+    repos: [],
+  },
 ];

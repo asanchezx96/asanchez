@@ -18,6 +18,21 @@ module.exports = {
     },
     extend: {
       colors: {
+        /* Paleta del portafolio (ver tokens en globals.css) */
+        base: "rgb(var(--c-base) / <alpha-value>)",
+        surface: "rgb(var(--c-surface) / <alpha-value>)",
+        panel: "rgb(var(--c-panel) / <alpha-value>)",
+        line: {
+          DEFAULT: "rgb(var(--c-line) / <alpha-value>)",
+          2: "rgb(var(--c-line-2) / <alpha-value>)",
+        },
+        ink: {
+          DEFAULT: "rgb(var(--c-ink) / <alpha-value>)",
+          2: "rgb(var(--c-ink-2) / <alpha-value>)",
+          3: "rgb(var(--c-ink-3) / <alpha-value>)",
+        },
+        brand: "rgb(var(--c-brand) / <alpha-value>)",
+        overlay: "rgb(var(--c-overlay) / <alpha-value>)",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",

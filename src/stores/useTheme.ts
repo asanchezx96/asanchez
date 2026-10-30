@@ -6,10 +6,13 @@ interface ThemeStore {
   toggle: () => void;
 }
 
+const prefersDark = () =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-color-scheme: dark)").matches;
+
 export const useTheme = create<ThemeStore>()(
   persist(
     (set) => ({
-      dark: false, // default: light mode
+      dark: prefersDark(), // default: preferencia del sistema
       toggle: () => set((s) => ({ dark: !s.dark })),
     }),
     { name: "portfolio-theme" }

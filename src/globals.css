@@ -2,33 +2,47 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Tokens ── */
+/* ── Tokens ──
+   Canales RGB para que Tailwind pueda aplicar opacidad (bg-brand/10). */
 :root {
-  --bg:        #0a0a0a;
-  --surface:   #111111;
-  --subtle:    #1a1a1a;
-  --border:    #242424;
-  --border-2:  #333333;
-  --txt:       #ededed;
-  --txt-2:     #888888;
-  --txt-3:     #555555;
-  --accent:    #00e676;   /* verde terminal — visible, sin quemar */
-  --primary:   #00e676;
-  --secondary: #00e676;
+  --c-base:     246 247 250;
+  --c-surface:  255 255 255;
+  --c-panel:    239 242 247;
+  --c-line:     223 228 237;
+  --c-line-2:   196 204 217;
+  --c-ink:      15 23 42;
+  --c-ink-2:    61 74 96;
+  --c-ink-3:    107 119 140;
+  --c-brand:    37 99 235;
+  --c-overlay:  15 23 42;
+  color-scheme: light;
 }
 
 .dark {
-  --bg:        #0a0a0a;
-  --surface:   #111111;
-  --subtle:    #1a1a1a;
-  --border:    #242424;
-  --border-2:  #333333;
-  --txt:       #ededed;
-  --txt-2:     #888888;
-  --txt-3:     #555555;
-  --accent:    #00e676;
-  --primary:   #00e676;
-  --secondary: #00e676;
+  --c-base:     8 10 15;
+  --c-surface:  13 16 23;
+  --c-panel:    19 23 33;
+  --c-line:     30 36 50;
+  --c-line-2:   48 57 76;
+  --c-ink:      236 239 245;
+  --c-ink-2:    163 172 189;
+  --c-ink-3:    105 116 137;
+  --c-brand:    99 160 255;
+  --c-overlay:  2 4 8;
+  color-scheme: dark;
+}
+
+/* Alias usados por las clases CSS de abajo */
+:root, .dark {
+  --bg:        rgb(var(--c-base));
+  --surface:   rgb(var(--c-surface));
+  --subtle:    rgb(var(--c-panel));
+  --border:    rgb(var(--c-line));
+  --border-2:  rgb(var(--c-line-2));
+  --txt:       rgb(var(--c-ink));
+  --txt-2:     rgb(var(--c-ink-2));
+  --txt-3:     rgb(var(--c-ink-3));
+  --accent:    rgb(var(--c-brand));
 }
 
 /* ── Base ── */
@@ -42,6 +56,7 @@
     font-size: 15px;
     line-height: 1.6;
     overflow-x: hidden;
+    transition: background-color .2s, color .2s;
   }
   code, .mono {
     font-family: 'JetBrains Mono', 'Fira Code', monospace;
@@ -263,3 +278,6 @@
     padding-left: 0;
   }
 }
+/* ── Scroll sin barra visible (tiras horizontales en móvil, paneles) ── */
+.no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+.no-scrollbar::-webkit-scrollbar { display: none; }
